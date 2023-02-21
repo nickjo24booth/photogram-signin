@@ -18,7 +18,7 @@
 
   <dt>Posted</dt>
   <dd>
-    2 months ago
+    <%= time_ago_in_words(@photo.created_at) %> ago
   </dd>
 
   <%if @photo.poster.id == session.fetch(:user_id)%>
@@ -44,6 +44,29 @@
     </a>
   </dd>
   <%end%>
+
+  <% if @photo.fans.where({ :id => session.fetch(:user_id)}).at(0) == nil %>
+  <dt>Add a fan</dt>
+  <dd>
+    <form action="/insert_like" method="post">
+      <input type="hidden" value="<%=@photo.id%>" name="query_photo_id">
+
+        <button>Like</button>
+    </form>
+  </dd>
+  <%end%>
+
+  <% if @photo.fans.where({ :id => session.fetch(:user_id)}).at(0) != nil %>
+  <dt>Remove a fan</dt>
+  <dd>
+    <form action="/delete_like" method="post">
+      <input type="hidden" value="<%=@photo.id%>" name="query_photo_id">
+
+        <button>Delete</button>
+    </form>
+  </dd>
+  <%end%>
+
 </dl>
 
 <h2>Comments</h2>

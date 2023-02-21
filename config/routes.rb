@@ -48,4 +48,15 @@ Rails.application.routes.draw do
   # DELETE
 
   get("/delete_comment/:the_comment_id", { :controller => "comments", :action => "destroy" })
+
+  # Like routes
+
+  # CREATE
+  
+  post("/insert_like", { :controller => "likes", :action => "create" })
+
+  # DELETE
+
+  post("/delete_like", { :controller => "likes", :action => "destroy" })
+
 end
