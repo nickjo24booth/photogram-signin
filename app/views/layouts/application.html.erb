@@ -29,6 +29,10 @@
     </li>
 
     <li>
+      <a href="/user_sign_out">Sign Out</a>
+    </li>
+
+    <li>
       <a href="/users">
         Users
       </a>
@@ -43,6 +47,19 @@
   </ul>
 
     </nav>
-    <%= yield %>
+
+    <%if notice.present? %>
+    <div style = "border: thin green solid; color: green" >
+      <%= notice%>
+    </div>
+    <%end%>
+
+    <%if alert.present? %>
+      <div style = "border: thin red solid; color: red">
+        <%= alert%>
+      </div>
+    <%end%>
+
+  <%= yield %>
   </body>
 </html>

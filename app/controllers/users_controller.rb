@@ -1,6 +1,15 @@
 class UsersController < ApplicationController
   def new_registration_form
-    render({ :template => "users/signup_form.html.erb"})
+    render({ :template => "users/signup_form.html.erb" })
+  end
+
+  def new_session_form
+    render({ :template => "users/signin_form.html.erb" })
+  end
+
+  def clear_cookies
+    reset_session
+    redirect_to("/", { :notice => "See ya later!" })
   end
 
   def index
@@ -23,14 +32,33 @@ class UsersController < ApplicationController
     user.password = params.fetch("input_password")
     user.password_confirmation = params.fetch("input_password_confirmation")
 
-    #Stopped at 22:05
-
     save_status = user.save
 
     if save_status == true
-      redirect_to("/users/#{user.username}", {:notice => "Welcome, #{user.username}!"})
+      session.store(:user_id, user.id)
+
+      redirect_to("/users/#{user.username}", { :notice => "Welcome, #{user.username}!" })
     else
-      redirect_to("/user_sign_up")
+      redirect_to("/user_sign_up", { :alert => user.errors.full_messages.to_sentence })
+    end
+  end
+
+  def authenticate
+    un = params.fetch("input_username")
+    password = params.fetch("input_password")
+
+    user = User.where({ :username => un }).at(0)
+
+    if user == nil
+      redirect_to("/user_sign_in", { :alert => "No one by that name 'round these parts" })
+    else
+      if user.authenticate(password) #method from has_secure_password definition in user model
+        session.store(:user_id, user.id)
+
+        redirect_to("/", { :notice => "Welcome back, #{user.username}!" })
+      else
+        redirect_to("/user_sign_in", { :alert => "Nice try, sucker!" })
+      end
     end
   end
 
@@ -38,11 +66,10 @@ class UsersController < ApplicationController
     the_id = params.fetch("the_user_id")
     user = User.where({ :id => the_id }).at(0)
 
-
     user.username = params.fetch("input_username")
 
     user.save
-    
+
     redirect_to("/users/#{user.username}")
   end
 
@@ -54,5 +81,4 @@ class UsersController < ApplicationController
 
     redirect_to("/users")
   end
-
 end
